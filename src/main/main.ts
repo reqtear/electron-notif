@@ -134,6 +134,7 @@ function showNotification() {
     body: NOTIFICATION_BODY,
   }).show();
 }
+app.setAppUserModelId(process.execPath)
 
 app
   .whenReady()

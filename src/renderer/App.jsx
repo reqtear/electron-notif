@@ -4,10 +4,10 @@ import { useRef, useEffect } from 'react';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 // import { getNotificationState } from 'macos-notification-state';
-import { collection, getDocs } from 'firebase/firestore';
-import db from '../firebaseConfig';
+// import { collection, getDocs } from 'firebase/firestore';
+// import db from '../firebaseConfig';
 
-import NotificationSound from './notification-sound.mp3';
+// import NotificationSound from './notification-sound.mp3';
 
 function Hello() {
   const audioPlayer = useRef(null);
@@ -21,10 +21,10 @@ function Hello() {
       body: 'coba',
     });
 
-    const querySnapshot = await getDocs(collection(db, 'users'));
-    querySnapshot.forEach((doc) => {
-      console.log(doc.id, doc.data());
-    });
+    // const querySnapshot = await getDocs(collection(db, 'users'));
+    // querySnapshot.forEach((doc) => {
+    //   console.log(doc.id, doc.data());
+    // });
   }
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function Hello() {
         <button type="button" onClick={playAudio}>
           Play
         </button>
-        <audio ref={audioPlayer} src={NotificationSound} />
+        {/* <audio ref={audioPlayer} src={NotificationSound} /> */}
       </div>
     </div>
   );
