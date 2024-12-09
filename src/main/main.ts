@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Notification } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -124,9 +124,21 @@ app.on('window-all-closed', () => {
   }
 });
 
+const NOTIFICATION_TITLE = 'Basic Notification';
+const NOTIFICATION_BODY = 'Notification from the Main process';
+
+function showNotification() {
+  console.log('start notification');
+  new Notification({
+    title: NOTIFICATION_TITLE,
+    body: NOTIFICATION_BODY,
+  }).show();
+}
+
 app
   .whenReady()
   .then(() => {
+    showNotification();
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
