@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, Link, Navigate, useNavigate } from "react-router-dom";
 import { FileTextFilled, HomeFilled, TableOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons"
-
+import axios from 'axios';
 
 
 export default function Sidebar({ outlet }) {
@@ -38,14 +38,22 @@ export default function Sidebar({ outlet }) {
 
     const routeActiveClass = "bg-slate-200"
 
-    const logout = async () => {
-        try {
-            await signOut(auth);
-            navigate('/login')
-        } catch (error) {
-            console.error(error);
-            alert(error.message);
-        }
+    const logout = () => {
+        // axios.post('http://devtesteam.site/api/logout',
+        //     {
+        //         token: localStorage.getItem('session'),
+        //     }).then(function (response) {
+        //         console.log(response);
+        //         localStorage.removeItem('session');
+        //         localStorage.clear();
+        //         navigate('/');
+        //     }).catch(function (error) { 
+
+        //     });
+        console.log(localStorage.getItem('session'));
+        localStorage.removeItem('session');
+        console.log(localStorage.getItem('session'));
+        navigate('/login');
     };
 
     return (

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 // import { getDatabase, ref, set, get, onValue, push, remove } from 'firebase/database';
 import Sidebar from '../layout/Sidebar';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons"
+import axios from 'axios';
 
 export default function Main() {
     const defaultUserState = {
@@ -198,7 +199,30 @@ export default function Main() {
         setIsModalOpen(false);
     };
 
+    const fetchData = () => {
+        axios.get('http://devtesteam.site/api/users',
+            {params :{ token: localStorage.getItem('session'), } }).then(function (response) {
+            let items = []
+            response.data.forEach(u => {
+                items.push({
+                    id: u.id,
+                    name: u.name,
+                    email: u.email,
+                    role: u.role,
+                    createdAt: u.created_at,
+                })
+            });
+            setUserList(items);
+        }).catch(function (error) { 
+            console.error('Error fetching data: ', error);
+        });
+    }
+
     useEffect(() => {
+        // localStorage.removeItem('session');
+        //         localStorage.clear();
+        console.log(localStorage.getItem('session'));
+        fetchData();
         // if(!auth.currentUser){
         //     navigate('/login');
         // }
@@ -241,9 +265,7 @@ export default function Main() {
                     <PlusOutlined /> Add User
                 </button>
                 <Table columns={columns} dataSource={userList} loading={loadingTable} />
-                <button type="button" onClick={logout}>
-                    Logout
-                </button>
+                
             {/* </div> */}
             {/* <div className="h-screen bg-cover">
                 <div className="flex min-h-full flex-1 flex-col px-6 py-12 lg:px-8">

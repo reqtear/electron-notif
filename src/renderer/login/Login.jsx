@@ -41,7 +41,7 @@ export default function Login() {
                 // console.log(response.data.data.role);
                 if(role == "admin"){
                     localStorage.setItem('session', session.token, 3600000);
-                    console.log( localStorage.getItem('session') );
+                    // console.log( localStorage.getItem('session') );
                     navigate('/admin');
                 }else{
                     console.log("bukan admin tapi : " + role);
@@ -97,7 +97,10 @@ export default function Login() {
     });
 
     useEffect(() => {
-
+        console.log(localStorage.getItem('session'));
+        if(localStorage.getItem('session')){
+            navigate('/admin');
+        }
     }, [])
 
     return (
