@@ -38,7 +38,7 @@ export default function Sidebar({ outlet }) {
 
     const routeActiveClass = "bg-slate-200"
 
-    const logout = () => {
+    const logout = async () => {
         // axios.post('http://devtesteam.site/api/logout',
         //     {
         //         token: localStorage.getItem('session'),
@@ -53,7 +53,8 @@ export default function Sidebar({ outlet }) {
         console.log(localStorage.getItem('session'));
         localStorage.removeItem('session');
         console.log(localStorage.getItem('session'));
-        navigate('/login');
+        // navigate('/login');
+        window.location.href = "/login";
     };
 
     return (
