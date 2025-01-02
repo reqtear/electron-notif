@@ -169,6 +169,36 @@ export default function Main() {
     setIsModalOpen(false);
   };
 
+  const handleUpdateUser = async () => {
+    let user = {};
+    apiClient
+      .put('http://devtesteam.site/api/users/user_id', formData)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.error('Error creating user: ', error);
+      });
+
+    setLoading(false);
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteUser = async () => {
+    let user = {};
+    apiClient
+      .put('http://devtesteam.site/api/users/user_id', formData)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.error('Error creating user: ', error);
+      });
+
+    setLoading(false);
+    setIsModalOpen(false);
+  };
+
   const fetchData = () => {
     apiClient
       .get('http://devtesteam.site/api/users')
