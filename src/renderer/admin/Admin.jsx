@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../layout/Sidebar';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import apiClient from '../apiClient';
 
 export default function Main() {
   const defaultUserState = {
@@ -155,7 +156,7 @@ export default function Main() {
 
   const handleAddUser = async () => {
     let user = {};
-    axios
+    apiClient
       .post('http://devtesteam.site/api/users', formData)
       .then(function (response) {
         console.log(response);
@@ -169,7 +170,7 @@ export default function Main() {
   };
 
   const fetchData = () => {
-    axios
+    apiClient
       .get('http://devtesteam.site/api/users')
       .then(function (response) {
         let items = [];
