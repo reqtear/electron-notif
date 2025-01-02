@@ -51,24 +51,15 @@ export default function Main() {
     if (method == 'create') {
       setFormData(defaultUserState);
     } else if (method == 'update') {
-      setLoading(true);
-
-      // const userRef = ref(db, `users/${user_id}`);
-      // const user = await get(userRef);
-
-      // if (user.exists()) {
-      //     console.log(user.val());
-      //     setFormData({
-      //         name: '',
-      //         email: '',
-      //         role: 'atasan'
-      //     })
-      // } else {
-      //     console.log("No data available for this key");
-      //     return null;
-      // }
-
-      setLoading(false);
+      setCurrentUser(user_id);
+      let user = userList.find((u) => u.id == user_id);
+      setFormData({
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        password: '',
+        c_password: '',
+      });
     }
 
     setIsModalOpen(true);
@@ -187,7 +178,7 @@ export default function Main() {
   const handleDeleteUser = async () => {
     let user = {};
     apiClient
-      .put('http://devtesteam.site/api/users/user_id', formData)
+      .delete('http://devtesteam.site/api/users/user_id')
       .then(function (response) {
         console.log(response);
       })
@@ -231,36 +222,6 @@ export default function Main() {
     //         localStorage.clear();
     console.log(localStorage.getItem('session'));
     fetchData();
-    // if(!auth.currentUser){
-    //     navigate('/login');
-    // }
-
-    // const usersRef = ref(db, 'users/');
-
-    // Listen for real-time updates
-    // const unsubscribe = onValue(usersRef, (snapshot) => {
-    //     setLoadingTable(true);
-    //     const data = snapshot.val();
-
-    //     // Convert Firebase object to array
-    //     const dataList = data
-    //     ? Object.keys(data).map(key => ({
-    //         id: key,
-    //         ...data[key]
-    //         }))
-    //     : [];
-
-    //     console.log('user List', dataList)
-
-    //     setUserList(dataList);
-
-    //     setLoadingTable(false);
-    // }, (error) => {
-    //     console.error("Error reading data:", error);
-    // });
-
-    // Cleanup subscription on component unmount
-    // return () => unsubscribe();
   }, []);
 
   return (
