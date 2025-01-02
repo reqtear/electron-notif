@@ -24,7 +24,7 @@ export default function Main() {
     email: '',
     role: 'atasan',
     password: '',
-    confirm_password: '',
+    c_password: '',
   };
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
@@ -153,46 +153,16 @@ export default function Main() {
     },
   ];
 
-  const logout = async () => {
-    // try {
-    //     await signOut(auth);
-    //     navigate('/login')
-    // } catch (error) {
-    //     console.error(err);
-    //     alert(err.message);
-    // }
-  };
-
   const handleAddUser = async () => {
     let user = {};
     axios
-      .post('http://devtesteam.site/api/users', {
-        params: { token: localStorage.getItem('session') },
-      })
+      .post('http://devtesteam.site/api/users', formData)
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
         console.error('Error creating user: ', error);
       });
-    setLoading(false);
-    return;
-
-    // const userRef = ref(db, 'users/');
-    // const newUserRef = push(userRef);
-
-    // await set(newUserRef, {
-    //     uid: user.uid,
-    //     name: formData.name,
-    //     email: formData.email,
-    //     role: formData.role,
-    //     createdAt: new Date().toISOString(),
-    // })
-    // .catch((error) => {
-    //     alert('Error adding user: '+error);
-    //     setLoading(false);
-    //     return;
-    // });
 
     setLoading(false);
     setIsModalOpen(false);
@@ -200,9 +170,7 @@ export default function Main() {
 
   const fetchData = () => {
     axios
-      .get('http://devtesteam.site/api/users', {
-        params: { token: localStorage.getItem('session') },
-      })
+      .get('http://devtesteam.site/api/users')
       .then(function (response) {
         let items = [];
         response.data.forEach((u) => {
@@ -335,9 +303,9 @@ export default function Main() {
           className="my-1"
           placeholder="Confirm password"
           type="password"
-          value={formData.confirm_password}
+          value={formData.c_password}
           onChange={(e) =>
-            setFormData({ ...formData, confirm_password: e.target.value })
+            setFormData({ ...formData, c_password: e.target.value })
           }
         />
         <label>Level</label>
