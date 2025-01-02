@@ -44,13 +44,13 @@ export default function Main() {
     setIsDeleteModalOpen(true);
   };
 
-  const showModalCreate = async (method, user_id = '') => {
+  const showModalCreate = async () => {
     setFormData(defaultUserState);
 
     setIsModalCreateOpen(true);
   };
 
-  const showModalUpdate = async (method, user_id = '') => {
+  const showModalUpdate = async (user_id) => {
     setCurrentUser(user_id);
     let user = userList.find((u) => u.id == user_id);
     setFormData({
@@ -132,7 +132,7 @@ export default function Main() {
     setLoading(true);
     let user = {};
     apiClient
-      .put('http://devtesteam.site/api/users/user_id', formData)
+      .put('http://devtesteam.site/api/users/' + currentUser, formData)
       .then(function (response) {
         console.log(response);
       })
@@ -269,6 +269,39 @@ export default function Main() {
           onChange={(e) =>
             setFormData({ ...formData, c_password: e.target.value })
           }
+        />
+        <label>Level</label>
+        <br />
+        <Radio.Group
+          className="my-1"
+          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+          value={formData.role}
+        >
+          <Radio value={'operator'}>Operator</Radio>
+          <Radio value={'supervisor'}>Supervisor</Radio>
+        </Radio.Group>
+      </Modal>
+
+      <Modal
+        title="Update User"
+        open={isModalUpdateOpen}
+        onOk={handleUpdateUser}
+        onCancel={() => setIsModalUpdateOpen(false)}
+        loading={loading}
+      >
+        <label>Nama Lengkap</label>
+        <Input
+          className="my-1"
+          placeholder="Name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+        <label>Email</label>
+        <Input
+          className="my-1"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
         <label>Level</label>
         <br />
