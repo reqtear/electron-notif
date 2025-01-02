@@ -33,7 +33,8 @@ export default function Main() {
 
   const [loading, setLoading] = useState(false);
   const [loadingTable, setLoadingTable] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [currentUser, setCurrentUser] = useState('');
@@ -43,58 +44,24 @@ export default function Main() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleCancelDelete = () => {
-    setIsDeleteModalOpen(false);
+  const showModalCreate = async (method, user_id = '') => {
+    setFormData(defaultUserState);
+
+    setIsModalCreateOpen(true);
   };
 
-  const showModal = async (method, user_id = '') => {
-    if (method == 'create') {
-      setFormData(defaultUserState);
-    } else if (method == 'update') {
-      setCurrentUser(user_id);
-      let user = userList.find((u) => u.id == user_id);
-      setFormData({
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        password: '',
-        c_password: '',
-      });
-    }
+  const showModalUpdate = async (method, user_id = '') => {
+    setCurrentUser(user_id);
+    let user = userList.find((u) => u.id == user_id);
+    setFormData({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      password: '',
+      c_password: '',
+    });
 
-    setIsModalOpen(true);
-  };
-
-  const handleUpdate = async () => {};
-
-  const handleOk = async () => {
-    if (formData.password != formData.confirm_password) {
-      alert('Password tidak sama.');
-      return;
-    }
-
-    setLoading(true);
-
-    await handleAddUser();
-  };
-
-  const handleDelete = async () => {
-    setLoading(true);
-
-    // const userRef = ref(db, `users/${currentUser}`);
-
-    // try {
-    //     await remove(userRef);
-    // } catch (error) {
-    //     alert('Delete user gagal.');
-    // }
-
-    setLoading(false);
-    showDeleteModal(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalUpdateOpen(true);
   };
 
   const columns = [
@@ -128,7 +95,7 @@ export default function Main() {
             <a
               key={record.id}
               className="mx-1 px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={() => showModal('edit', record.id)}
+              onClick={() => showModalCreate('edit', record.id)}
             >
               <EditOutlined /> Edit
             </a>
@@ -146,6 +113,7 @@ export default function Main() {
   ];
 
   const handleAddUser = async () => {
+    setLoading(true);
     let user = {};
     apiClient
       .post('http://devtesteam.site/api/users', formData)
@@ -157,10 +125,11 @@ export default function Main() {
       });
 
     setLoading(false);
-    setIsModalOpen(false);
+    setIsModalCreateOpen(false);
   };
 
   const handleUpdateUser = async () => {
+    setLoading(true);
     let user = {};
     apiClient
       .put('http://devtesteam.site/api/users/user_id', formData)
@@ -172,10 +141,11 @@ export default function Main() {
       });
 
     setLoading(false);
-    setIsModalOpen(false);
+    setIsModalCreateOpen(false);
   };
 
   const handleDeleteUser = async () => {
+    setLoading(true);
     let user = {};
     apiClient
       .delete('http://devtesteam.site/api/users/user_id')
@@ -187,7 +157,7 @@ export default function Main() {
       });
 
     setLoading(false);
-    setIsModalOpen(false);
+    setIsModalCreateOpen(false);
   };
 
   const fetchData = () => {
@@ -232,7 +202,7 @@ export default function Main() {
       <h5 className="text-2xl font-medium mb-4">User List</h5>
       <button
         type="button"
-        onClick={() => showModal('create')}
+        onClick={() => showModalCreate('create')}
         className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-xs px-3 py-2 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 float-end"
       >
         <PlusOutlined /> Add User
@@ -260,10 +230,10 @@ export default function Main() {
             </div> */}
 
       <Modal
-        title="Manage User"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        title="Create User"
+        open={isModalCreateOpen}
+        onOk={handleAddUser}
+        onCancel={() => setIsModalCreateOpen(false)}
         loading={loading}
       >
         <label>Nama Lengkap</label>
@@ -315,9 +285,9 @@ export default function Main() {
       <Modal
         title="Delete User"
         open={isDeleteModalOpen}
-        onCancel={handleCancelDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
         footer={[
-          <Button key="back" onClick={handleCancelDelete}>
+          <Button key="back" onClick={() => setIsDeleteModalOpen(false)}>
             Cancel
           </Button>,
           <Button
