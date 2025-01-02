@@ -165,37 +165,18 @@ export default function Main() {
 
   const handleAddUser = async () => {
     let user = {};
-    try {
-      user = await registerWithEmailAndPassword(
-        formData.email,
-        formData.password,
-      );
-    } catch (err) {
-      switch (err.code) {
-        case 'auth/email-already-in-use':
-          alert(
-            'This email is already registered. Try logging in or use a different email.',
-          );
-          break;
-        case 'auth/invalid-email':
-          alert('The email address is not valid.');
-          break;
-        case 'auth/operation-not-allowed':
-          alert('Email/password accounts are not enabled.');
-          break;
-        case 'auth/weak-password':
-          alert('The password is too weak. Please choose a stronger password.');
-          break;
-        case 'auth/network-request-failed':
-          alert('Network error. Please check your internet connection.');
-          break;
-        default:
-          alert(err.message || 'An unexpected error occurred during sign up.');
-          console.error('Signup error:', err);
-      }
-      setLoading(false);
-      return;
-    }
+    axios
+      .post('http://devtesteam.site/api/users', {
+        params: { token: localStorage.getItem('session') },
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.error('Error creating user: ', error);
+      });
+    setLoading(false);
+    return;
 
     // const userRef = ref(db, 'users/');
     // const newUserRef = push(userRef);
@@ -366,8 +347,8 @@ export default function Main() {
           onChange={(e) => setFormData({ ...formData, role: e.target.value })}
           value={formData.role}
         >
-          <Radio value={'atasan'}>Atasan</Radio>
-          <Radio value={'bawahan'}>Bawahan</Radio>
+          <Radio value={'operator'}>Operator</Radio>
+          <Radio value={'supervisor'}>Supervisor</Radio>
         </Radio.Group>
       </Modal>
 
