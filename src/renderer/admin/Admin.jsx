@@ -95,7 +95,7 @@ export default function Main() {
             <a
               key={record.id}
               className="mx-1 px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={() => showModalCreate('edit', record.id)}
+              onClick={() => showModalUpdate(record.id)}
             >
               <EditOutlined /> Edit
             </a>
@@ -114,8 +114,8 @@ export default function Main() {
 
   const handleAddUser = async () => {
     setLoading(true);
-    let user = {};
-    apiClient
+
+    await apiClient
       .post('http://devtesteam.site/api/users', formData)
       .then(function (response) {
         console.log(response);
@@ -131,7 +131,7 @@ export default function Main() {
   const handleUpdateUser = async () => {
     setLoading(true);
     let user = {};
-    apiClient
+    await apiClient
       .put('http://devtesteam.site/api/users/' + currentUser, formData)
       .then(function (response) {
         console.log(response);
@@ -147,7 +147,7 @@ export default function Main() {
   const handleDeleteUser = async () => {
     setLoading(true);
     let user = {};
-    apiClient
+    await apiClient
       .delete('http://devtesteam.site/api/users/user_id')
       .then(function (response) {
         console.log(response);
@@ -157,7 +157,7 @@ export default function Main() {
       });
 
     setLoading(false);
-    setIsModalCreateOpen(false);
+    setIsDeleteModalOpen(false);
   };
 
   const fetchData = () => {
