@@ -1,6 +1,6 @@
 import { Card, Modal, Select, Spin, Alert } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import axios from 'axios';
+// import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import {auth} from '../firebaseConfig';
@@ -9,11 +9,13 @@ import backGround from '../../../assets/bg-login.jpg';
 import logoApp from '../../../assets/logo-app.png';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import apiClient from '../apiClient';
+import io from 'socket.io-client';
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    email: 'admin@gmail.com',
-    password: 'admin123',
+    email: 'admin@notif.com',
+    password: 'password',
   });
   const [resp, setResp] = useState([]);
   // const { openMessage } = useMessage();
@@ -25,11 +27,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [statusConnection, setStatusConnection] = useState(false);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setButtonLoading(true);
     // logInWithEmailAndPassword(formData.email, formData.password);
-    axios
-      .post('http://devtesteam.site/api/login', {
+    await apiClient
+      .post('/login', {
         email: formData.email,
         password: formData.password,
       })
@@ -41,10 +43,19 @@ export default function Login() {
           // console.log(response.data.data.role);
           if (role == 'admin') {
             localStorage.setItem('session', session.token, 3600000);
-            axios.defaults.headers.common['Authorization'] =
+            localStorage.setItem('role', role, 3600000);
+            localStorage.setItem('user_id', session.user_id, 3600000);
+            apiClient.defaults.headers.common['Authorization'] =
               'Bearer ' + session.token;
             // console.log( localStorage.getItem('session') );
             navigate('/admin');
+          } else if (role == 'operator') {
+            localStorage.setItem('session', session.token, 3600000);
+            localStorage.setItem('role', role, 3600000);
+            localStorage.setItem('user_id', session.user_id, 3600000);
+            apiClient.defaults.headers.common['Authorization'] =
+              'Bearer ' + session.token;
+            navigate('/operator');
           } else {
             console.log('bukan admin tapi : ' + role);
           }
@@ -83,25 +94,35 @@ export default function Login() {
   //     navigate('/admin');
   // }
 
-  window.Pusher = Pusher;
+  // window.Pusher = Pusher;
 
-  window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: '275cda7bf41eba251385',
-    cluster: 'ap1',
-    forceTLS: true,
-  });
+  // window.Echo = new Echo({
+  //   broadcaster: 'pusher',
+  //   key: '275cda7bf41eba251385',
+  //   cluster: 'ap1',
+  //   forceTLS: true,
+  // });
 
-  var channel = window.Echo.channel('my-channel');
-  channel.listen('.my-event', function (data) {
-    alert(JSON.stringify(data));
-  });
+  // var channel = window.Echo.channel('my-channel');
+  // channel.listen('.my-event', function (data) {
+  //   alert(JSON.stringify(data));
+  // });
 
   useEffect(() => {
     console.log(localStorage.getItem('session'));
     if (localStorage.getItem('session')) {
-      navigate('/admin');
+      // navigate('/admin');
     }
+
+    // // Listen for the "message" event
+    // window.socket.on('message', (message) => {
+    //   alert(message);
+    // });
+
+    // // Cleanup on component unmount
+    // return () => {
+    //   window.socket.disconnect();
+    // };
   }, []);
 
   return (

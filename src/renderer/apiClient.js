@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://devtesteam.site/api',
+  baseURL: 'https://devtesteam.site/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,7 +13,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       console.error('Token expired. Redirecting...');
-      localStorage.removeItem('token');
+      localStorage.removeItem('session');
       window.location.href = '/login';
     }
     return Promise.reject(error);

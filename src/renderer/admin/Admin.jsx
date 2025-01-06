@@ -18,6 +18,7 @@ import Sidebar from '../layout/Sidebar';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import apiClient from '../apiClient';
+import io from 'socket.io-client';
 
 export default function Main() {
   const defaultUserState = {
@@ -46,7 +47,6 @@ export default function Main() {
 
   const showModalCreate = async () => {
     setFormData(defaultUserState);
-
     setIsModalCreateOpen(true);
   };
 
@@ -89,18 +89,18 @@ export default function Main() {
       title: 'Action',
       key: 'action',
       render: (record) => {
-        console.log(record);
+        // console.log(record);
         return (
           <Space key={record.id} size="middle">
             <a
-              key={record.id}
+              key={record.id + '-edit'}
               className="mx-1 px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               onClick={() => showModalUpdate(record.id)}
             >
               <EditOutlined /> Edit
             </a>
             <a
-              key={record.id}
+              key={record.id + '-delete'}
               className="mx-1 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
               onClick={() => showDeleteModal(record.id)}
             >
@@ -114,16 +114,15 @@ export default function Main() {
 
   const handleAddUser = async () => {
     setLoading(true);
-
     await apiClient
-      .post('http://devtesteam.site/api/users', formData)
+      .post('/users', formData)
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
-        console.error('Error creating user: ', error);
+        // console.error('Error creating user: ', error);
+        alert('Error creating user: ' + error);
       });
-
     setLoading(false);
     setIsModalCreateOpen(false);
   };
@@ -132,40 +131,40 @@ export default function Main() {
     setLoading(true);
     let user = {};
     await apiClient
-      .put('http://devtesteam.site/api/users/' + currentUser, formData)
+      .put('/users/' + currentUser, formData)
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
-        console.error('Error creating user: ', error);
+        console.error('Error updating user: ', error);
       });
-
     setLoading(false);
-    setIsModalCreateOpen(false);
+    setIsModalUpdateOpen(false);
   };
 
   const handleDeleteUser = async () => {
     setLoading(true);
     let user = {};
     await apiClient
-      .delete('http://devtesteam.site/api/users/user_id')
+      .delete('/users/' + currentUser)
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
-        console.error('Error creating user: ', error);
+        console.error('Error deleting user: ', error);
       });
 
     setLoading(false);
     setIsDeleteModalOpen(false);
   };
 
-  const fetchData = () => {
-    apiClient
-      .get('http://devtesteam.site/api/users')
+  const fetchData = async () => {
+    await apiClient
+      .get('/users')
       .then(function (response) {
         let items = [];
-        response.data.forEach((u) => {
+        console.log(response);
+        response.data.data.map((u) => {
           items.push({
             id: u.id,
             name: u.name,
@@ -181,17 +180,31 @@ export default function Main() {
       });
   };
 
-  const channel = window.Echo.channel('my-channel');
-  channel.listen('.user-change', function myEventHandler(data) {
-    alert(JSON.stringify(data));
-    fetchData();
-  });
+  // const channel = window.Echo.channel('my-channel');
+  // console.log(channel);
+  // channel.listen('.user-change', function myEventHandler(data) {
+  //   // alert(JSON.stringify(data));
+  //   console.log(data);
+  //   // fetchData();
+  // });
 
   useEffect(() => {
     // localStorage.removeItem('session');
     //         localStorage.clear();
     console.log(localStorage.getItem('session'));
     fetchData();
+
+    const socket = io('http://45.118.133.169:3000');
+
+    // Listen for the "user-change" event
+    socket.on('user-change', (message) => {
+      fetchData();
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   return (
@@ -208,26 +221,7 @@ export default function Main() {
         <PlusOutlined /> Add User
       </button>
       <Table columns={columns} dataSource={userList} loading={loadingTable} />
-
       {/* </div> */}
-      {/* <div className="h-screen bg-cover">
-                <div className="flex min-h-full flex-1 flex-col px-6 py-12 lg:px-8">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-sm mt-4">
-                        <h2 className="mt-2 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                            User List
-                        </h2>
-                    </div>
-                    <button type="button" onClick={() => showModal('create')}>
-                        Add User
-                    </button>
-                    <Card className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm xl:grid-cols-3 shadow-md">
-                        <Table columns={columns} dataSource={userList} loading={loadingTable} />
-                    </Card>
-                    <button type="button" onClick={logout}>
-                        Logout
-                    </button>
-                </div>
-            </div> */}
 
       <Modal
         title="Create User"
@@ -327,7 +321,7 @@ export default function Main() {
             key="submit"
             type="danger"
             loading={loading}
-            onClick={handleDelete}
+            onClick={handleDeleteUser}
           >
             Delete
           </Button>,
